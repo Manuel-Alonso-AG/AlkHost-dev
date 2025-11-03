@@ -8,7 +8,7 @@ Para poder abrir tu proyecto desde http://localhost:3000/projects/:nombre del pr
 
 - Crea una carpeta con el nombre del proyecto a guardar dentro de la carpeta www
 
-> [!NOTE] No confundir la carpeta www con la que esta dentro de la carpeta server
+>[!NOTE] No confundir la carpeta www con la que esta dentro de la carpeta server
 >
 > ```markdown
 > ├── client
