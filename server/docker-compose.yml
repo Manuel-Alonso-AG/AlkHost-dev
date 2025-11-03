@@ -1,0 +1,66 @@
+services:
+  php:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: php_service
+    volumes:
+      - ./php:/app
+    working_dir: /app
+    ports:
+      - "${PHP_PORT}:8000"
+    environment:
+      - DB_HOST=mysql
+      - DB_NAME=${MYSQL_DATABASE}
+      - DB_USER=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+    command: php -S 0.0.0.0:8000
+    networks:
+      - dev-network
+    depends_on:
+      - mysql
+    restart: unless-stopped
+
+  node:
+    image: node:20-alpine
+    container_name: alkhost-node
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - ../www:/usr/src/app/www
+    working_dir: /usr/src/app
+    command: sh -c "npm install --no-audit --no-fund || true && npm run dev"
+    depends_on:
+      - mysql
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - dev-network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+networks:
+  dev-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
