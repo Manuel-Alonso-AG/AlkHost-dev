@@ -5,8 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: php_service
     volumes:
-      - ./php:/app
-    working_dir: /app
+      - ../www:/var/www/html
+    working_dir: /var/www/html
     ports:
       - "${PHP_PORT}:8000"
     environment:

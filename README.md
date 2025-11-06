@@ -19,4 +19,4 @@ docker compose logs -f node
 ```
 
 >[!NOTE]
->Este proyecto esta diseñado para abrir el archivo idex.html de tu proyecto. Sin embargo todavia no implemento la posibilidad de usar archivos .css, .js o .php para poder dar estilo o funcionalidad a su proyecto web
+>Este proyecto esta diseñado para manejar paginas web estaticas y dinamicas utilizando php
