@@ -1,3 +1,11 @@
+<?php
+$cuenta = 0;
+
+$cuenta++;
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -8,6 +16,7 @@
 	<body>
 		<h1>
             <?php echo "Hola, esta es una prueba de PHP funcionando correctamente."; ?>
+			<?php echo $cuenta?>
         </h1>
 	</body>
 </html>
