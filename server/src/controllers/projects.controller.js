@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import mime from "mime-types";
+import jsdom from 'jsdom';
 import { php_port } from "../config.js";
 
 const projectsPath = "./www";
@@ -11,14 +12,38 @@ class ProjectsController {
             const files = fs.readdirSync(projectsPath, { withFileTypes: true });
 
             const projectsList = files
-                .filter(file => file.isDirectory)
-                .map(file => file.name)
+                .filter(file => {
+                    return file.isDirectory() && !file.name.startsWith('.');
+                })
+                .map(file => {
+                    const projectPath = path.join(projectsPath, file.name);
+                    const stats = fs.statSync(projectPath);
 
-            res.render("main", { title: "Servidor web AlkHost", projects: projectsList })
+                    const hasPhp = fs.existsSync(path.join(projectPath, 'index.php'));
+                    const hasHtml = fs.existsSync(path.join(projectPath, 'index.html'));
+
+                    return {
+                        name: file.name,
+                        type: hasPhp ? 'PHP' : hasHtml ? 'HTML' : 'Carpeta',
+                        lastModified: stats.mtime.toLocaleDateString('es-ES', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })
+                    };
+                });
+
+            res.render("main", {
+                title: "Servidor web AlkHost",
+                projects: projectsList,
+                totalProjects: projectsList.length
+            });
         } catch (error) {
-            res.status(500).json({
-                error: "Error Al cargar la pagina principal",
-                details: error.message,
+            console.error("Error al cargar proyectos:", error);
+            res.status(500).render('error', {
+                title: "Error al cargar la página principal",
+                message: `No se pudieron cargar los proyectos: ${error.message}`,
+                escapeHtml: false
             });
         }
     }
@@ -70,33 +95,33 @@ class ProjectsController {
     serveDirectory(res, dirPath, projectName) {
         const indexHtml = path.join(dirPath, "index.html");
         const indexPhp = path.join(dirPath, "index.php");
-        
+
         console.log("🔍 Buscando index en:", dirPath);
 
         if (fs.existsSync(indexHtml)) {
             console.log("✅ Encontrado index.html");
             return this.serveFile(res, indexHtml, projectName, "index.html");
         }
-        
+
         if (fs.existsSync(indexPhp)) {
             console.log("✅ Encontrado index.php");
             return this.servePhpFile(res, indexPhp, projectName, "index.php");
         }
-        
+
         console.log("❌ No se encontró index");
-        
+
         res.status(403).render('error', {
             title: 'Sin archivo index',
             message: `El proyecto ${projectName} no tiene un archivo index.html o index.php \n
-                Por favor, crea uno de estos archivos en: ${dirPath}`
+                Por favor, crea uno de estos archivos en: www/${projectName}`
         });
     }
 
     async serveFile(res, filePath, projectName, subPath) {
         const ext = path.extname(filePath).toLowerCase();
-        
+
         if (ext == "php") return this.servePhpFile(res, filePath, projectName, subPath);
-        
+
         const mimeType = mime.lookup(filePath) || "application/octet-stream";
 
         console.log("📤 Accediendo al archivo:", filePath);
@@ -127,7 +152,7 @@ class ProjectsController {
             console.log("🐘 Ejecutando PHP:", phpUrl);
 
             const response = await fetch(phpUrl);
-            
+
             if (!response.ok) {
                 throw new Error(`PHP service responded with status: ${response.status}`);
             }
@@ -142,9 +167,14 @@ class ProjectsController {
             console.error("❌ Error ejecutando PHP:", error);
             res.status(500).render('error', {
                 title: 'Error ejecutando PHP',
-                message: `No se pudo ejecutar el archivo PHP: ${projectName}/${subPath}
-                    Error: ${error.message}
-                    Asegúrate de que el servicio PHP esté corriendo.`
+                message: `No se pudo ejecutar el archivo PHP: ${projectName}/${subPath} 
+                    <br><br>
+                    <strong>Error:</strong> ${error.message}
+                    <br><br>
+                    <em>Asegúrate de que el servicio PHP esté corriendo, o intenta ingresar manualmente a:</em>
+                    <br>
+                    <a class="error-page-a" href="http://localhost:${php_port}/${projectName}/${subPath}">http://localhost:${php_port}/${projectName}/${subPath}</a>`,
+                escapeHtml: false
             });
         }
     }

@@ -9,30 +9,59 @@
 </head>
 
 <body>
-    <header>
-        <h1>AlkHost -dev</h1>
-        <p>Entorno de desarrollo web local -Servidor web- de aplicaciones estaticas</p>
-    </header>
-
     <main>
         <div class="main-page">
-            <h1>Bienvenido a AlkHost</h1>
+            <h1>Dashboard</h1>
             <section class="projects-section">
-                <h2>Tus Proyectos</h2>
+                <h2>Tus Proyectos: <%= totalProjects %></h2>
                 <div class="projects-grid">
-                    <% projects.forEach(function(projectName) { %>
+                    <% projects.forEach(function(project) { %>
                         <div class="project-card">
-                            <h3><%= projectName %></h3>
-                            <a href="/<%= projectName %>" class="btn">localhost/<%= projectName %></a>
+                            <div class="project-header">
+                                <h3><%= project.name %></h3>
+                                <span class="project-type <%= project.type.toLowerCase() %>">
+                                    <%= project.type %>
+                                </span>
+                            </div>
+                            <div class="project-info">
+                                <p class="project-details">
+                                    <% if(project.type == 'Carpeta') { %>
+                                        <span title="Sin index">No cuenta con index.html o index.php</span>
+                                        <% } else { %>
+                                            <span title="Ubicacion Host">🗄️ http://localhost:<%= project.type == 'PHP' ? 9000 : 3000 %>/<%= project.name %></span>
+                                    <% } %>
+
+                                    <span title="Última modificación">🕒 <%= project.lastModified %></span>
+                                </p>
+                            </div>
+                            <a href="/<%= project.name %>" class="btn">Ver Proyecto</a>
                         </div>
-                        <% }); %>
+                    <% }); %>
                 </div>
             </section>
         </div>
     </main>
 
     <footer>
-        <p>By Alonso</p>
+        <div class="footer-info">
+            <h2>AlkHost</h2>
+            <br>
+            Bienvenido al sistema <b>AlkHost -dev</b>, un entorno de desarrollo web local con uso de <b>servidor local</b> + <b>PHP</b> + <b>MySQL</b> donde podrás alojar tus proyectos de manera local.
+            <br>
+            Para poder abrir tu proyecto web crea una carpeta con el nombre del proyecto dentro de la carpeta www.
+
+            <br>
+            Para conectarse a la base de datos de MySQL, utiliza:
+            <ul>
+                <li><b>host</b>: localhost</li>
+                <li><b>port</b>: 3308</li>
+                <li><b>user</b>: user</li>
+                <li><b>password</b>: password</li>
+            </ul>
+            <br>
+            >Para la conexión de MySQL con PHP, al estar ambos servicios en contenedores de docker el host sera el nombre del servicio que contiene MySQL *<b>host</b>: mysql
+        </div>
+        <h3>By Alonso <a href="https://github.com/Manuel-Alonso-AG">Manuel-Alonso-AG</a></h3>
     </footer>
 </body>
 

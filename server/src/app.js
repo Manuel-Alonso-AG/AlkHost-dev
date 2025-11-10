@@ -1,10 +1,11 @@
 import express from "express";
 // import cors from "cors";
 import morgan from "morgan";
-import { port } from "./config.js";
-import projectsRoutes from "./routes/projects.routes.js";
 import path from "path";
+import { port } from "./config.js";
 import { fileURLToPath } from "url";
+import projectsRoutes from "./routes/projects.routes.js";
+import dockerRoutes from './routes/docker.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,16 +26,17 @@ app.use((req, res, next) => {
         '/robots.txt',
         '/sitemap.xml'
     ];
-    
+
     if (systemPaths.some(path => req.path.startsWith(path))) {
         return res.status(204).end();
     }
-    
+
     next();
 });
 
 app.use('/', projectsRoutes);
+app.use('/api/docker', dockerRoutes);
 
 app.listen(port, () => {
-	console.log(`Servidor corriendo en http://localhost:${port}`);
+    console.log(`Servidor corriendo en http://localhost:${port}`);
 });

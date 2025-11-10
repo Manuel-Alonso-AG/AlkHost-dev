@@ -9,27 +9,24 @@
     <link rel="stylesheet" href="/css/main.css">
 </head>
 
-<body>
-    <header>
-        <h1>AlkHost -dev</h1>
-        <p>Entorno de desarrollo web local -Servidor web- de aplicaciones estaticas</p>
-    </header>
+<body class="body-error">
 
     <main>
         <div class="error-page">
             <h1>Error</h1>
             
-            <p>
-                <%= message %>
-            </p>
+            <% if (locals.escapeHtml === false) { %>
+                <%- message %>
+            <% } else { %>
+                <p><%= message %></p>
+            <% } %>
+            <br>
+            <br>
 
             <a href="/dashboard" class="btn">Volver al inicio</a>
         </div>
     </main>
 
-    <footer>
-        <p>By Alonso</p>
-    </footer>
 </body>
 
 </html>

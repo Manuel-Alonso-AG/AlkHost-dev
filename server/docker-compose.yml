@@ -30,6 +30,7 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
       - ../www:/usr/src/app/www
+      - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /usr/src/app
     command: sh -c "npm install --no-audit --no-fund || true && npm run dev"
     depends_on:
