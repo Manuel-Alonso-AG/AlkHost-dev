@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import mime from "mime-types";
-import jsdom from 'jsdom';
 import { php_port } from "../config.js";
 
 const projectsPath = "./www";
@@ -73,7 +72,7 @@ class ProjectsController {
                     return res.redirect(301, req.path + '/');
                 }
 
-                return this.serveDirectory(res, fullPath, file, subPath);
+                return this.serveDirectory(res, fullPath, file);
             }
 
             else if (stats.isFile()) return this.serveFile(res, fullPath);
@@ -108,13 +107,58 @@ class ProjectsController {
             return this.servePhpFile(res, indexPhp, projectName, "index.php");
         }
 
-        console.log("❌ No se encontró index");
+        const relativeSubPath = path.relative(
+            path.join(projectsPath, projectName),
+            dirPath
+        );
 
-        res.status(403).render('error', {
-            title: 'Sin archivo index',
-            message: `El proyecto ${projectName} no tiene un archivo index.html o index.php \n
-                Por favor, crea uno de estos archivos en: www/${projectName}`
-        });
+        console.log("📂 No se encontró index");
+        return this.showDirectoryListing(res, dirPath, projectName, relativeSubPath);
+    }
+
+    showDirectoryListing(res, dirPath, projectName, subPath) {
+        try {
+            const content = fs.readdirSync(dirPath, { withFileTypes: true });
+
+            const filtered = content.filter(item => !item.name.startsWith('.'))
+                .sort((a, b) => {
+                    if (a.isDirectory() && !b.isDirectory()) return -1;
+                    if (!a.isDirectory() && b.isDirectory()) return 1;
+                    return a.name.localeCompare(b.name);
+                })
+
+            const filesList = filtered.map(file => {
+                const isDir = file.isDirectory();
+                const urlPath = subPath && subPath !== '.' ? `/${projectName}/${subPath}/${file.name}` : `/${projectName}/${file.name}`;
+
+                return {
+                    name: file.name,
+                    url: isDir ? urlPath + '/' : urlPath,
+                    isDirectory: isDir,
+                    icon: this.getIconFile(isDir)
+                };
+            });
+
+            res.status(403).render('directoryListing', {
+                filePath: subPath + '/' + projectName,
+                filesList
+            });
+        } catch (error) {
+            console.error("❌ Error generando listado:", error);
+            res.status(500).render('error', {
+                title: 'Error al listar directorio',
+                message: `No se pudo generar el listado del directorio: ${error.message}`,
+                escapeHtml: false
+            });
+        }
+    }
+
+    getIconFile(isDir) {
+        if (isDir) return '🗂️';
+
+        //* Agregar mas iconos para los tipos de archivos
+
+        return '📄';
     }
 
     async serveFile(res, filePath, projectName, subPath) {
@@ -143,11 +187,11 @@ class ProjectsController {
         }
     }
 
-    //! Falta verificacion de implementacion
     async servePhpFile(res, filePath, projectName, subPath) {
+        const relativePath = path.relative(projectsPath, filePath);
+
         try {
-            const relativePath = path.relative(projectsPath, filePath);
-            const phpUrl = `http://localhost:${php_port}/${relativePath}`;
+            const phpUrl = `http://php:8000/${relativePath}`;
 
             console.log("🐘 Ejecutando PHP:", phpUrl);
 
@@ -168,12 +212,16 @@ class ProjectsController {
             res.status(500).render('error', {
                 title: 'Error ejecutando PHP',
                 message: `No se pudo ejecutar el archivo PHP: ${projectName}/${subPath} 
-                    <br><br>
-                    <strong>Error:</strong> ${error.message}
-                    <br><br>
-                    <em>Asegúrate de que el servicio PHP esté corriendo, o intenta ingresar manualmente a:</em>
-                    <br>
-                    <a class="error-page-a" href="http://localhost:${php_port}/${projectName}/${subPath}">http://localhost:${php_port}/${projectName}/${subPath}</a>`,
+                <br><br>
+                <strong>Error:</strong> ${error.message}
+                <br><br>
+                <em>Asegúrate de que el servicio PHP esté corriendo.</em>
+                <br><br>
+                <strong>Desde tu navegador puedes acceder a:</strong>
+                <br>
+                <a class="error-page-a" href="http://localhost:${php_port}/${relativePath}">
+                    http://localhost:${php_port}/${relativePath}
+                </a>`,
                 escapeHtml: false
             });
         }
@@ -182,8 +230,9 @@ class ProjectsController {
     serve404(res, projectName, filePath) {
         res.status(404).render('error', {
             title: '404 - Archivo no encontrado',
-            message: `No se pudo encontrar el archivo para el proyecto: ${projectName} \n
-                Ruta buscada: ${filePath}`
+            message: `No se pudo encontrar el archivo para el proyecto: ${projectName} <br>
+                Ruta buscada: ${filePath}`,
+            escapeHtml: false
         });
     }
 

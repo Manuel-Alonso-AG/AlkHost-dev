@@ -35,6 +35,9 @@ services:
     command: sh -c "npm install --no-audit --no-fund || true && npm run dev"
     depends_on:
       - mysql
+      - php
+    networks:
+      - dev-network
     environment:
       - NODE_ENV=${NODE_ENV}
       - DB_HOST=${DB_HOST}

@@ -11,6 +11,7 @@
 		"dev": "nodemon src/app.js"
 	},
 	"dependencies": {
+		"child_process": "^1.0.2",
 		"cors": "^2.8.5",
 		"dockerode": "^4.0.9",
 		"ejs": "^3.1.10",

@@ -166,7 +166,7 @@ footer {
     background: var(--background-color);
     color: var(--text-color-card);
     text-align: center;
-    padding: 2rem;
+    padding: 4rem 2rem;
     min-width: 100vh;
     bottom: 0;
     

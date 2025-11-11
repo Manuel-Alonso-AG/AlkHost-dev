@@ -27,7 +27,7 @@
                                 <p class="project-details">
                                     <% if(project.type == 'Carpeta') { %>
                                         <span title="Sin index">No cuenta con index.html o index.php</span>
-                                        <% } else { %>
+                                    <% } else { %>
                                             <span title="Ubicacion Host">🗄️ http://localhost:<%= project.type == 'PHP' ? 9000 : 3000 %>/<%= project.name %></span>
                                     <% } %>
 
