@@ -135,12 +135,12 @@ class ProjectsController {
                     name: file.name,
                     url: isDir ? urlPath + '/' : urlPath,
                     isDirectory: isDir,
-                    icon: this.getIconFile(isDir)
+                    icon: this.getIconFile(file.name, isDir)
                 };
             });
 
             res.status(403).render('directoryListing', {
-                filePath: subPath + '/' + projectName,
+                filePath: projectName + '/' + subPath,
                 filesList
             });
         } catch (error) {
@@ -153,12 +153,29 @@ class ProjectsController {
         }
     }
 
-    getIconFile(isDir) {
+    getIconFile(filename, isDir) {
         if (isDir) return '🗂️';
 
         //* Agregar mas iconos para los tipos de archivos
+        const ext = path.extname(filename).toLowerCase();
+        const icons = {
+            '.jpg': '🖼️',
+            '.jpeg': '🖼️',
+            '.png': '🖼️',
+            '.svg': '🖼️',
+            '.webp': '🖼️',
+            '.html': '🌐',
+            '.css': '🎨',
+            '.js': '📜',
+            '.json': '📋',
+            '.php': '🐘',
+            '.sql': '🗄️',
+            '.db': '🗄️',
+            '.xml': '📋',
+            '.csv': '📊'
+        }
 
-        return '📄';
+        return icons[ext] || '📄';
     }
 
     async serveFile(res, filePath, projectName, subPath) {
@@ -209,20 +226,11 @@ class ProjectsController {
             res.send(content);
         } catch (error) {
             console.error("❌ Error ejecutando PHP:", error);
-            res.status(500).render('error', {
-                title: 'Error ejecutando PHP',
-                message: `No se pudo ejecutar el archivo PHP: ${projectName}/${subPath} 
-                <br><br>
-                <strong>Error:</strong> ${error.message}
-                <br><br>
-                <em>Asegúrate de que el servicio PHP esté corriendo.</em>
-                <br><br>
-                <strong>Desde tu navegador puedes acceder a:</strong>
-                <br>
-                <a class="error-page-a" href="http://localhost:${php_port}/${relativePath}">
-                    http://localhost:${php_port}/${relativePath}
-                </a>`,
-                escapeHtml: false
+            res.status(500).render('errorPhp', {
+                projectName,
+                subPath,
+                error: error.message,
+                linkProject: `http://localhost:${php_port}/${relativePath}`
             });
         }
     }

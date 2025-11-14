@@ -1,13 +1,14 @@
 import 'dart:convert';
-import 'package:alkhost_client/models/docker_service.dart';
 import 'package:http/http.dart' as http;
+import '../models/docker_service.dart';
+import '../utils/constants.dart';
 
 class ApiService {
-  static const String urlApi = "http://localhost:3000/api/docker";
+  final String baseUrl = AppConstants.apiUrl;
 
   Future<List<DockerService>> getServices() async {
     try {
-      final res = await http.get(Uri.parse('$urlApi/services'));
+      final res = await http.get(Uri.parse('$baseUrl/services'));
 
       if (res.statusCode == 200) {
         final data = json.decode(res.body);
@@ -16,7 +17,7 @@ class ApiService {
             .toList();
         return services;
       } else {
-        throw Exception('Error obteniendo servicios: ${res.statusCode}');
+        throw Exception('Error ${res.statusCode}: ${res.body}');
       }
     } catch (e) {
       throw Exception('Error de conexión: $e');
@@ -26,9 +27,8 @@ class ApiService {
   Future<bool> startService(String serviceId) async {
     try {
       final res = await http.post(
-        Uri.parse('$urlApi/services/$serviceId/start'),
+        Uri.parse('$baseUrl/services/$serviceId/start'),
       );
-
       return res.statusCode == 200;
     } catch (e) {
       print('Error iniciando servicio: $e');
@@ -39,9 +39,8 @@ class ApiService {
   Future<bool> stopService(String serviceId) async {
     try {
       final res = await http.post(
-        Uri.parse('$urlApi/services/$serviceId/stop'),
+        Uri.parse('$baseUrl/services/$serviceId/stop'),
       );
-
       return res.statusCode == 200;
     } catch (e) {
       print('Error deteniendo servicio: $e');
@@ -52,9 +51,8 @@ class ApiService {
   Future<bool> restartService(String serviceId) async {
     try {
       final res = await http.post(
-        Uri.parse('$urlApi/services/$serviceId/restart'),
+        Uri.parse('$baseUrl/services/$serviceId/restart'),
       );
-
       return res.statusCode == 200;
     } catch (e) {
       print('Error reiniciando servicio: $e');
@@ -62,43 +60,39 @@ class ApiService {
     }
   }
 
-  //* Implementacion futura para mostar datos internos (Estadisticas, logs)
-
   Future<String> getServiceLogs(String serviceId, {int tail = 100}) async {
     try {
       final res = await http.get(
-        Uri.parse('$urlApi/services/$serviceId/logs?tail=$tail'),
+        Uri.parse('$baseUrl/services/$serviceId/logs?tail=$tail'),
       );
 
       if (res.statusCode == 200) {
         final data = json.decode(res.body);
-        return data['logs'];
+        return data['logs'] ?? '';
       } else {
-        throw Exception('Error obteniendo logs: ${res.statusCode}');
+        throw Exception('Error ${res.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error de conexión: $e');
+      throw Exception('Error obteniendo logs: $e');
     }
   }
 
   Future<bool> startAllServices() async {
     try {
-      final res = await http.post(Uri.parse('$urlApi/services/start-all'));
-
+      final res = await http.post(Uri.parse('$baseUrl/services/start-all'));
       return res.statusCode == 200;
     } catch (e) {
-      print('Error iniciando todos los servicios: $e');
+      print('Error iniciando todos: $e');
       return false;
     }
   }
 
   Future<bool> stopAllServices() async {
     try {
-      final res = await http.post(Uri.parse('$urlApi/services/stop-all'));
-
+      final res = await http.post(Uri.parse('$baseUrl/services/stop-all'));
       return res.statusCode == 200;
     } catch (e) {
-      print('Error deteniendo todos los servicios: $e');
+      print('Error deteniendo todos: $e');
       return false;
     }
   }

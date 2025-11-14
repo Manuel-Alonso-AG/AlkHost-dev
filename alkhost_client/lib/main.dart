@@ -1,22 +1,21 @@
-import 'package:alkhost_client/providers/docker_provider.dart';
-import 'package:alkhost_client/views/dashboard_page.dart';
+import 'package:alkhost_client/app.dart';
+import 'package:alkhost_client/utils/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => DockerProvider())],
-      child: const MainApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: Scaffold(body: DashboardPage()));
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: darkTheme,
+      home: const App(),
+    );
   }
 }

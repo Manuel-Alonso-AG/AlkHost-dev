@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error ejecutando PHP</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body class="content-center">
+
+    <main>
+        <div class="card center-text">
+            <h1 class="danger-color">Error</h1>
+            
+            <p>No se pudo ejecutar el archivo PHP: <%= projectName %>/<%= subPath %></p> 
+            <br><br>
+            
+            <strong>Error:</strong> <%= error %>
+            <br><br>
+            
+            <em>Asegúrate de que el servicio PHP esté corriendo.</em>
+            
+            <br><br>
+            
+            <strong>Desde tu navegador puedes acceder a:</strong>
+            
+            <br>
+            <a class="link-color" href="<%= linkProject %>">
+                <%= linkProject %>
+            </a>`
+            
+            <br>
+            <br>
+
+            <a href="/dashboard" class="btn">Volver al dashboard</a>
+        </div>
+    </main>
+
+</body>
+
+</html>

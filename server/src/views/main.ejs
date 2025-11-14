@@ -16,7 +16,7 @@
                 <h2>Tus Proyectos: <%= totalProjects %></h2>
                 <div class="projects-grid">
                     <% projects.forEach(function(project) { %>
-                        <div class="project-card">
+                        <div class="card">
                             <div class="project-header">
                                 <h3><%= project.name %></h3>
                                 <span class="project-type <%= project.type.toLowerCase() %>">
@@ -53,10 +53,10 @@
             <br>
             Para conectarse a la base de datos de MySQL, utiliza:
             <ul>
-                <li><b>host</b>: localhost</li>
-                <li><b>port</b>: 3308</li>
-                <li><b>user</b>: user</li>
-                <li><b>password</b>: password</li>
+                <li>🖥️ <b>host</b>: localhost</li>
+                <li>🧭 <b>port</b>: 3308</li>
+                <li>🧑‍💻 <b>user</b>: user</li>
+                <li>🔑 <b>password</b>: password</li>
             </ul>
             <br>
             >Para la conexión de MySQL con PHP, al estar ambos servicios en contenedores de docker el host sera el nombre del servicio que contiene MySQL *<b>host</b>: mysql

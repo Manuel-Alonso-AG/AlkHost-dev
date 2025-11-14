@@ -29,3 +29,4 @@ docker compose logs -f node
 >Este proyecto esta diseñado para manejar paginas web estaticas y dinamicas utilizando php ademas de manejar base de datos MySQL
 
 ![Dashboard](localhost_3000_dashboard.png)
+![!AlkHostManager](AlkHostClientDashboard.png)

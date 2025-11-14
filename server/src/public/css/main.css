@@ -1,5 +1,5 @@
 :root {
-    --background-gradient : linear-gradient(120deg, #2ea861 0%, #29b1bb 35%, #2b4f9e 100%);
+    --background-gradient : linear-gradient(120deg, #289455 0%, #20a2ac 35%, #2b4f9e 100%);
     --background-color: white;
     --text-color: white;
     --text-color-card: #333; 
@@ -23,27 +23,15 @@
 body {
     background: var(--background-gradient);
     min-height: 100vh;
-}
 
-header {
-    background: var(--background-color);
-    color: var(--text-color-card);
-    padding: 1rem 2rem;
-
-}
-
-nav {
-    max-width: 1200px;
-    margin: 0 auto;
 }
 
 main {
     max-width: 1200px;
     height: 100%;
-    margin: 2rem auto;
+    margin: 3rem auto;
     padding: 0 1rem;
 }
-
 
 
 .main-page{
@@ -55,6 +43,24 @@ main {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
     padding: 2rem 0;
+}
+
+.card {
+    background: var(--background-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.card h3 {
+    margin-top: 0;
+    color: var(--text-color-card);
 }
 
 .project-card {
@@ -139,8 +145,17 @@ main {
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
+.content-center {
+    align-content: center;
+}
+
 .body-error {
     align-content: center;
+}
+
+.center-text {
+    text-align: center;
+    align-self: center;
 }
 
 /* Página de error */
@@ -153,6 +168,14 @@ main {
     align-self: center;
 }
 
+.danger-color {
+    color: #dc3545;
+}
+
+.link-color {
+    color: #10b981;
+}
+
 .error-page h1 {
     color: #dc3545;
 }
@@ -161,13 +184,18 @@ main {
     color: #2874A6;
 }
 
+.section-block {
+    display: flex;
+    flex-direction: column;
+}
+
 /* Footer */
 footer {
     background: var(--background-color);
     color: var(--text-color-card);
     text-align: center;
     padding: 4rem 2rem;
-    min-width: 100vh;
+    
     bottom: 0;
     
 }
@@ -183,7 +211,7 @@ footer ul {
 
 .footer-info{
     justify-self: center;
-    width: 100vh;
+
     text-align: justify;
     justify-items: left;
 }

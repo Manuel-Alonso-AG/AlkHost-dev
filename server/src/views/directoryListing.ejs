@@ -9,24 +9,27 @@
     <link rel="stylesheet" href="/css/main.css">
 </head>
 
-<body class="body-error">
+<body class="content-center">
 
     <main>
         <div class="main-page">
             <h2>Contenido de : <%= filePath %></h2>
             <p><strong><%= filesList.length %></strong> elementos en este directorio</p>
-
-            <div class="error-page">
+            <br>
+            <div class="card section-block">
                 <% if(filesList.length == 0) { %>
                     <p>👾 Este directorio está vacío</p>
                 <% } else { %>
-                    <div>
+                    <section class="section-block">
                         <% filesList.forEach(function(file) { %>
-                            <%= file.icon %><a class="error-page-a" href="<%= file.url %>"><%= file.url %></a>
+                            <p>
+                                <%= file.icon %> <a class="link-color" href="<%= file.url %>"><%= file.name %></a>
+                            </p>
                         <% }); %>
-                    </div>
+                    </section>
                 <% } %>
-                <a href="/dashboard" class="btn">Volver al inicio</a>
+                <br>
+                <a href="/dashboard" class="btn">Volver al dashboard</a>
             </div>
         </div>
         
