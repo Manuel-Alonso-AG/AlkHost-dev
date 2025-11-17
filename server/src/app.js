@@ -5,6 +5,7 @@ import path from "path";
 import { port } from "./config.js";
 import { fileURLToPath } from "url";
 import projectsRoutes from "./routes/projects.routes.js";
+import databaseRoutes from './routes/database.routes.js';
 import dockerRoutes from './routes/docker.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -34,8 +35,12 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/', projectsRoutes);
+
+//! Falta protejer estas rutas
 app.use('/api/docker', dockerRoutes);
+app.use('/api/', databaseRoutes);
+
+app.use('/', projectsRoutes);
 
 app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);

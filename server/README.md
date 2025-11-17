@@ -34,7 +34,44 @@ Para poder abrir tu proyecto desde http://localhost:3000/:nombre del proyecto.
   - Ejemplo: http://localhost:3000/ex1/
 
 
-- Para uso de PHP, cambia el puerto de localhost a 9000. Por el momento, para acceder a tus proyectos PHP, tienes que ingresar a: http://localhost:9000/[Nombre-del-proyecto]/
+- Para uso de PHP pueden tener problemas en el desarrollo de aplicaicones grandes, pro el momento se encontro problemas en el uso de la base de datos mysql. Una solucion es cambiar el puerto de localhost a 9000 para acceder a tus proyectos PHP, tienes que ingresar a: http://localhost:9000/[Nombre-del-proyecto]/ 
+
+>[!NOTE]
+>No se porque ocurre pero estare investigando la razon
+> projects.controller.js:214
+
+``` js
+async servePhpFile(res, filePath, projectName, subPath) {
+        const relativePath = path.relative(projectsPath, filePath);
+
+        try {
+            const phpUrl = `http://php:8000/${relativePath}`;
+
+            console.log("🐘 Ejecutando PHP:", phpUrl);
+
+            const response = await fetch(phpUrl);
+
+            if (!response.ok) {
+                throw new Error(`PHP service responded with status: ${response.status}`);
+            }
+
+            const content = await response.text();
+
+            console.log("✅ PHP ejecutado correctamente");
+
+            res.setHeader("Content-Type", "text/html; charset=utf-8");
+            res.send(content);
+        } catch (error) {
+            console.error("❌ Error ejecutando PHP:", error);
+            res.status(500).render('errorPhp', {
+                projectName,
+                subPath,
+                error: error.message,
+                linkProject: `http://localhost:${php_port}/${relativePath}`
+            });
+        }
+    }
+```
 
 
 - Implementación de base de datos MySQL; para poder conectarse, utiliza:

@@ -6,31 +6,37 @@ import { php_port } from "../config.js";
 const projectsPath = "./www";
 
 class ProjectsController {
+    allProjectsList() {
+        const files = fs.readdirSync(projectsPath, { withFileTypes: true });
+
+        const projectsList = files
+            .filter(file => {
+                return file.isDirectory() && !file.name.startsWith('.');
+            })
+            .map(file => {
+                const projectPath = path.join(projectsPath, file.name);
+                const stats = fs.statSync(projectPath);
+
+                const hasPhp = fs.existsSync(path.join(projectPath, 'index.php'));
+                const hasHtml = fs.existsSync(path.join(projectPath, 'index.html'));
+
+                return {
+                    name: file.name,
+                    type: hasPhp ? 'PHP' : hasHtml ? 'HTML' : 'Carpeta',
+                    lastModified: stats.mtime.toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    })
+                };
+            });
+
+        return projectsList;
+    }
+
     async showAllProjects(req, res) {
         try {
-            const files = fs.readdirSync(projectsPath, { withFileTypes: true });
-
-            const projectsList = files
-                .filter(file => {
-                    return file.isDirectory() && !file.name.startsWith('.');
-                })
-                .map(file => {
-                    const projectPath = path.join(projectsPath, file.name);
-                    const stats = fs.statSync(projectPath);
-
-                    const hasPhp = fs.existsSync(path.join(projectPath, 'index.php'));
-                    const hasHtml = fs.existsSync(path.join(projectPath, 'index.html'));
-
-                    return {
-                        name: file.name,
-                        type: hasPhp ? 'PHP' : hasHtml ? 'HTML' : 'Carpeta',
-                        lastModified: stats.mtime.toLocaleDateString('es-ES', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        })
-                    };
-                });
+            const projectsList = this.allProjectsList()
 
             res.render("main", {
                 title: "Servidor web AlkHost",
@@ -204,6 +210,7 @@ class ProjectsController {
         }
     }
 
+    //TODO: Modificar la ejecucion de php, no esta funcionando correctamente
     async servePhpFile(res, filePath, projectName, subPath) {
         const relativePath = path.relative(projectsPath, filePath);
 

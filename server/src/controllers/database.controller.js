@@ -1,24 +1,41 @@
-const connection = "Crear conexion";
+import mysql from 'mysql2/promise';
+
+const db = await mysql.createPool({
+    host: 'mysql',
+    port: '3306',
+    user: 'user',
+    password: 'password'
+});
 
 class DatabaseController {
-    getDatabases(res, req) {
-        res.json({
-            cont: 5,
-            databasesNames: [
-                "DB1", "DB2", "DB3", "DB4", "DB5"
-            ]
-        })
+    async getDatabases(req, res) {
+        try {
+            const [rows] = await db.query('SHOW DATABASES;');
+            res.json({ databases: rows })
+        } catch (error) {
+            res.status(500).json({
+                error: error.message
+            })
+
+        }
     }
 
-    getTables(res, req) {
-        const { database } = req;
+    async getTables(req, res) {
+        const { database } = req.params;
 
-        res.json({
-            count: 3,
-            tablesNames: [
-                "TB1", "TB2", "TB3",
-            ]
-        });
+        try {
+            const [rows] = await db.query(
+                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ?;",
+                [database]
+            );
+
+            res.json({
+                database,
+                tables: rows.map(r => r.TABLE_NAME)
+            });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 }
 
